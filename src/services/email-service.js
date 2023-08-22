@@ -1,7 +1,7 @@
 const {TicketRepository}=require('../repositories')
 const {StatusCodes}=require('http-status-codes')
 
-const {MAILER}=require('../config');
+const mailSender=require('../config/email-config');
 const AppError = require('../utils/error/app-error');
 const {Enum}=require('../utils/common');
 const {PENDING,SUCCESS,FAILED}=Enum.TICKET_STATUS_ENUMS;
@@ -10,15 +10,18 @@ const ticketRepo=new TicketRepository();
 
 async function sendMail(mailFrom,mailTo,subject,text){
     try {
-        const response= await MAILER.sendMail({
+        const response= await mailSender.sendMail({
             from:mailFrom,
             to:mailTo,
             subject:subject,
             text:text
         });
+        console.log(response);
         return response;
     } catch (error) {
-        throw new AppError('Couldn\'t able to send Email',StatusCodes.INTERNAL_SERVER_ERROR)
+        console.log(error)
+        throw error;
+        //throw new AppError('Couldn\'t able to send Email',StatusCodes.INTERNAL_SERVER_ERROR)
     }
 }
 
